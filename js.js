@@ -2,43 +2,57 @@
 function Validator(option) {
     var formElement = document.querySelector(option.form);
     var selectorRules = {};
+
     if (formElement) {
         formElement.onsubmit = function (e) {
             e.preventDefault();
         }
 
         function validate (inputElement, rule) {
+
             var inputCheck;
             var rules = selectorRules[rule.selector];
-            console.log(rules)
             var errorText = inputElement.parentElement.querySelector('.form-message');
+            
             for (var i = 0; i < rules.length; ++i){
-        inputCheck = rules[i](inputElement.value);
-        if (inputCheck) break;
+
+            inputCheck = rules[i](inputElement.value);
+            if (inputCheck) break;
+
             }
+
             if (inputCheck) {
-        errorText.innerText = inputCheck;
-        inputElement.style.borderColor = 'red';
+            errorText.innerText = inputCheck;
+            inputElement.style.borderColor = 'red';
             } else {
-      errorText.innerText = '';
-      inputElement.style.borderColor = 'rgb(115, 156, 160)';
+            errorText.innerText = '';
+            inputElement.style.borderColor = 'rgb(115, 156, 160)';
             }
+
        }
+    //    Bước 1, lặp qua từng function trong mảng có key là rules
         option.rules.forEach( function(rule) {
+            // Lấy ra từng rule con, và lấy giá tị truyền qua key là rule.selector
           if (Array.isArray(selectorRules[rule.selector])) {
               selectorRules[rule.selector].push(rule.check)
+            // lần 2 push thêm func vào value có key là rule.selector
+
             } else {    
                 selectorRules[rule.selector] = [rule.check]
             }
+            console.log(selectorRules)
+            // lần nhất kiểm tra thấy selectorRules[rule.selector] trống thì chèn các func đã định nghĩa vào mãng rỗng này
             var inputElement = formElement.querySelector(rule.selector);
+
             if (inputElement){
                 inputElement.onblur = function (){
                     validate (inputElement, rule)
-                  }
-              }
-            })
+                }
+            }
+        })
     }
-  }
+}
+
 Validator.isRequied = function (selector) {
     return {
         selector: selector,
@@ -47,6 +61,8 @@ Validator.isRequied = function (selector) {
         }
     }
 }
+
+
 Validator.isEmail = function (selector) {
     return {
         selector: selector,
@@ -65,6 +81,8 @@ Validator.isEmail = function (selector) {
         }
     }
 }
+
+
 Validator.characters = function (selector, min, max) {
     return {
         selector: selector,
@@ -81,6 +99,8 @@ Validator.characters = function (selector, min, max) {
         }
     }
 }
+
+
 Validator.isConfirm = function (selector, getConfirmValue, message) {
     return {
         selector: selector,
@@ -100,6 +120,8 @@ Validator.isConfirm = function (selector, getConfirmValue, message) {
         }
     }
 }
+
+
 Validator({
     form: '#form-1',
     rules: [
